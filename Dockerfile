@@ -26,13 +26,18 @@ ENV LC_CTYPE en_US.UTF-8
 ENV LC_MESSAGES en_US.UTF-8
 
 # Disable noisy "Handling signal" log messages:
-# ENV GUNICORN_CMD_ARGS --log-level WARNING
+ENV GUNICORN_CMD_ARGS --log-level WARNING
+
 
 RUN set -ex \
     && buildDeps=' \
+       build-essential \
         freetds-dev \
         libkrb5-dev \
+        zlib1g-dev \
+        libxml2-dev \
         libsasl2-dev \
+        libxml2-dev \
         libssl-dev \
         libffi-dev \
         libpq-dev \
@@ -77,7 +82,8 @@ COPY script/entrypoint.sh /entrypoint.sh
 COPY config/airflow.cfg ${AIRFLOW_USER_HOME}/airflow.cfg
 
 RUN chown -R airflow: ${AIRFLOW_USER_HOME}
-
+#RUN apt-get install -y git
+#RUN git clone git clone https://github.com/tensorflow/tfx.git
 EXPOSE 8080 5555 8793
 
 USER airflow
