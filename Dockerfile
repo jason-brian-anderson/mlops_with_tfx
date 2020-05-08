@@ -1,11 +1,13 @@
 # VERSION 1.10.9
-# AUTHOR: Matthieu "Puckel_" Roisil
-# DESCRIPTION: Basic Airflow container
+# AUTHOR:  jason.anderson.professional@gmail.com
+# DESCRIPTION: tfx container with airflow, based on puckel's airflow container.
 # BUILD: docker build --rm -t puckel/docker-airflow .
 # SOURCE: https://github.com/puckel/docker-airflow
 
 FROM python:3.7-slim-buster
-LABEL maintainer="Puckel_"
+#FROM python:3.7.7-slim-buster
+#FROM python:3.6.10-slim-buster
+LABEL maintainer="jason_anderson_professional@gmail.com"
 
 # Never prompt the user for choices on installation/configuration of packages
 ENV DEBIAN_FRONTEND noninteractive
@@ -84,7 +86,7 @@ COPY config/airflow.cfg ${AIRFLOW_USER_HOME}/airflow.cfg
 RUN chown -R airflow: ${AIRFLOW_USER_HOME}
 #RUN apt-get install -y git
 #RUN git clone git clone https://github.com/tensorflow/tfx.git
-EXPOSE 8080 5555 8793
+EXPOSE 8080 5555 8793 18888
 
 USER airflow
 WORKDIR ${AIRFLOW_USER_HOME}

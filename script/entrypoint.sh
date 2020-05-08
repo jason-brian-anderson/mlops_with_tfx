@@ -23,6 +23,7 @@ export \
   AIRFLOW__CORE__FERNET_KEY \
   AIRFLOW__CORE__LOAD_EXAMPLES \
 
+
 # Install custom python package if requirements.txt is present
 if [ -e "/requirements.txt" ]; then
     echo ">>>>>>INSTALLING REQUIREMENTS.TXT<<<<<<<<<<<<<"
@@ -113,8 +114,18 @@ if [ "$AIRFLOW__CORE__EXECUTOR" = "CeleryExecutor" ]; then
   wait_for_port "Redis" "$REDIS_HOST" "$REDIS_PORT"
 fi
 
+jupyter () {
+	echo "Starting Jupyter..."
+	echo "Starting Jupyter..."
+	echo "Starting Jupyter..."
+	echo "Starting Jupyter..."
+	/usr/local/airflow/.local/bin/jupyter notebook --ip=0.0.0.0 --notebook-dir=/usr/local/airflow/dags --port=18888 --NotebookApp.token='tensorflow' &
+	#/root/.local/bin/jupyter notebook --ip=0.0.0.0 --notebook-dir=/usr/local/airflow/dags --port=18888 &
+
+}
 case "$1" in
   webserver)
+    jupyter
     airflow initdb
     if [ "$AIRFLOW__CORE__EXECUTOR" = "LocalExecutor" ] || [ "$AIRFLOW__CORE__EXECUTOR" = "SequentialExecutor" ]; then
       # With the "Local" and "Sequential" executors it should all run in one container.

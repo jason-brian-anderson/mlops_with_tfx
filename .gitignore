@@ -6,6 +6,10 @@ Session.vim
 .netrwhist
 *~
 
+#don't share the metastore creds
+*.env
+
+
 ### SublimeText ###
 # cache files for sublime text
 *.tmlanguage.cache
