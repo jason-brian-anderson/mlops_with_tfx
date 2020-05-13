@@ -150,7 +150,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libzmq3-dev \
         pkg-config \
         software-properties-common \
-        unzip
+        unzip \
+        #python3-dev \
+	libsnappy-dev 
 
 
 

@@ -50,6 +50,7 @@ services:
         ports:
             - "8081:8080"
             - "18888:18888"
+            - "6006:6006"
         command: webserver
         healthcheck:
             test: ["CMD-SHELL", "[ -f /usr/local/airflow/airflow-webserver.pid ]"]
