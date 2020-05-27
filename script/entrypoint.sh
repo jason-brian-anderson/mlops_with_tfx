@@ -123,6 +123,10 @@ jupyter () {
 	/usr/local/airflow/.local/bin/jupyter nbextension enable --py widgetsnbextension
 	/usr/local/airflow/.local/bin/jupyter nbextension install --py --symlink tensorflow_model_analysis
 	/usr/local/airflow/.local/bin/jupyter nbextension enable --py tensorflow_model_analysis
+	/usr/local/airflow/.local/bin/jupyter nbextension install --py --symlink witwidget
+	/usr/local/airflow/.local/bin/jupyter nbextension enable witwidget --py 
+
+	/usr/local/airflow/.local/bin/jupyter nbextensions_configurator enable --user
 
 	/usr/local/airflow/.local/bin/jupyter notebook --ip=0.0.0.0 --notebook-dir=/usr/local/airflow/dags --port=18888 --NotebookApp.token='tensorflow' &
 	#/root/.local/bin/jupyter notebook --ip=0.0.0.0 --notebook-dir=/usr/local/airflow/dags --port=18888 &
