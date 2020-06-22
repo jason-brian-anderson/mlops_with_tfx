@@ -24,7 +24,7 @@ services:
         env_file:
                 - tfx_metastore_mysql.env
         environment:
-            - NVIDIA_VISIBLE_DEVICES=all
+            - NVIDIA_VISIBLE_DEVICES=1,2,3
             - LOAD_EX=n
             - EXECUTOR=Local
             - AIRFLOW_DAG_DIR_LIST_INTERVAL=1 #dag_dir_list_interval
