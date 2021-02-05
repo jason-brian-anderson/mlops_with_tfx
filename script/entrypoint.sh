@@ -29,7 +29,7 @@ if [ -e "/requirements.txt" ]; then
     echo ">>>>>>INSTALLING REQUIREMENTS.TXT<<<<<<<<<<<<<"
     echo ">>>>>>INSTALLING REQUIREMENTS.TXT<<<<<<<<<<<<<"
     echo ">>>>>>INSTALLING REQUIREMENTS.TXT<<<<<<<<<<<<<"
-    $(command -v pip) install --user -r /requirements.txt
+    $(command -v pip) install --user  --no-warn-script-location -r /requirements.txt
     echo ">>>>>>INSTALLING REQUIREMENTS.TXT<<<<<<<<<<<<<"
     echo ">>>>>>INSTALLING REQUIREMENTS.TXT<<<<<<<<<<<<<"
     echo ">>>>>>INSTALLING REQUIREMENTS.TXT<<<<<<<<<<<<<"
@@ -120,15 +120,21 @@ jupyter () {
 	echo "Starting Jupyter..."
 	echo "Starting Jupyter..."
 
-	/usr/local/airflow/.local/bin/jupyter nbextension enable --py widgetsnbextension
-	/usr/local/airflow/.local/bin/jupyter nbextension install --py --symlink tensorflow_model_analysis
-	/usr/local/airflow/.local/bin/jupyter nbextension enable --py tensorflow_model_analysis
-	/usr/local/airflow/.local/bin/jupyter nbextension install --py --symlink witwidget
-	/usr/local/airflow/.local/bin/jupyter nbextension enable witwidget --py 
 
+        #/usr/local/airflow/.local/bin/python -m pip install jupyter_contrib_nbextensions
+	#adding --sys-prefix
+	/usr/local/airflow/.local/bin/jupyter nbextension enable --py widgetsnbextension --user #--sys-prefix
+
+	/usr/local/airflow/.local/bin/jupyter nbextension install --py --symlink tensorflow_model_analysis --user #--sys-prefix
+	/usr/local/airflow/.local/bin/jupyter nbextension enable --py tensorflow_model_analysis #--sys-prefix
+
+	/usr/local/airflow/.local/bin/jupyter nbextension install --py --symlink witwidget #--sys-prefix
+	/usr/local/airflow/.local/bin/jupyter nbextension enable witwidget --py  #--sys-prefix
+
+	/usr/local/airflow/.local/bin/jupyter nbextension install --py --symlink jupyter_nbextensions_configurator #--sys-prefix
 	/usr/local/airflow/.local/bin/jupyter nbextensions_configurator enable --user
 
-	/usr/local/airflow/.local/bin/jupyter notebook --ip=0.0.0.0 --notebook-dir=/usr/local/airflow/dags --port=18888 --NotebookApp.token='tensorflow' &
+	/usr/local/airflow/.local/bin/jupyter notebook --ip=0.0.0.0 --notebook-dir=/usr/local/airflow/dags --port=18888 --NotebookApp.token='tensorflow' & 2>&1
 	#/root/.local/bin/jupyter notebook --ip=0.0.0.0 --notebook-dir=/usr/local/airflow/dags --port=18888 &
 
 }

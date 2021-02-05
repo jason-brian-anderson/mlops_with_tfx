@@ -5,6 +5,7 @@
 # SOURCE: https://github.com/puckel/docker-airflow
 
 FROM python:3.7-slim-buster
+#RUN pip install --upgrade pip
 #FROM python:3.7.7-slim-buster
 #FROM python:3.6.10-slim-buster
 LABEL maintainer="jason_anderson_professional@gmail.com"
@@ -16,17 +17,18 @@ ENV TERM linux
 # Airflow
 ARG AIRFLOW_VERSION=1.10.9
 ARG AIRFLOW_USER_HOME=/usr/local/airflow
+ARG JUPYTER_HOME=/usr/local/share/jupyter
 ARG AIRFLOW_DEPS=""
 ARG PYTHON_DEPS=""
 ENV AIRFLOW_HOME=${AIRFLOW_USER_HOME}
-
+ENV TF_CPP_MIN_LOG_LEVEL="2"
 # Define en_US.
 ENV LANGUAGE en_US.UTF-8
 ENV LANG en_US.UTF-8
 ENV LC_ALL en_US.UTF-8
 ENV LC_CTYPE en_US.UTF-8
 ENV LC_MESSAGES en_US.UTF-8
-ENV CUDA_VISIBLE_DEVICES=1,2,3
+ENV CUDA_VISIBLE_DEVICES=0,1,2,3
 # Disable noisy "Handling signal" log messages:
 ENV GUNICORN_CMD_ARGS --log-level WARNING
 
@@ -49,6 +51,7 @@ RUN set -ex \
     && apt-get upgrade -yqq \
     && apt-get install -yqq --no-install-recommends \
         $buildDeps \
+	procps \
         freetds-bin \
         build-essential \
         default-libmysqlclient-dev \
@@ -92,17 +95,36 @@ gnupg2 curl ca-certificates && \
     echo "deb https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/x86_64 /" > /etc/apt/sources.list.d/nvidia-ml.list && \
     apt-get purge --autoremove -y curl && \
 rm -rf /var/lib/apt/lists/*
+###########################################
+#Pre TF 2.4.1
+###########################################
+#ENV CUDA_VERSION 10.2.89
 
-ENV CUDA_VERSION 10.2.89
+#ENV CUDA_PKG_VERSION 10-2=$CUDA_VERSION-1
 
-ENV CUDA_PKG_VERSION 10-2=$CUDA_VERSION-1
+## For libraries in the cuda-compat-* package: https://docs.nvidia.com/cuda/eula/index.html#attachment-a
+#RUN apt-get update && apt-get install -y --no-install-recommends \
+#        cuda-cudart-$CUDA_PKG_VERSION \
+#cuda-compat-10-2 && \
+#ln -s cuda-10.2 /usr/local/cuda && \
+#    rm -rf /var/lib/apt/lists/*
+###########################################
+
+
+###########################################
+#ENV CUDA_VERSION 10.2.89
+
+#ENV CUDA_PKG_VERSION 11-2-0=$CUDA_VERSION-1
 
 # For libraries in the cuda-compat-* package: https://docs.nvidia.com/cuda/eula/index.html#attachment-a
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        cuda-cudart-$CUDA_PKG_VERSION \
-cuda-compat-10-2 && \
-ln -s cuda-10.2 /usr/local/cuda && \
-    rm -rf /var/lib/apt/lists/*
+#        cuda-cudart-$CUDA_PKG_VERSION \
+#cuda-compat-11-2 
+cuda
+#ln -s cuda-11.2 /usr/local/cuda && \
+#    rm -rf /var/lib/apt/lists/*
+#RUN apt-get update && apt-get install cuda_10.2
+###########################################
 
 # Required for nvidia-docker v1
 RUN echo "/usr/local/nvidia/lib" >> /etc/ld.so.conf.d/nvidia.conf && \
@@ -153,8 +175,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         unzip \
         #python3-dev \
 	libsnappy-dev 
+ 	#libnvinfer6=6.0.1-1+cuda10.1 \
+        #libnvinfer-dev=6.0.1-1+cuda10.1 \
+        #libnvinfer-plugin6=6.0.1-1+cuda10.1
 
-
+        #libnvinfer6=${CUDNN}+cuda${CUDA} \
+        #libnvinfer-dev=${CUDNN}+cuda${CUDA} \
+        #libnvinfer-plugin6=${CUDNN}+cuda${CUDA}
 
 
 
@@ -168,8 +195,22 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 COPY script/entrypoint.sh /entrypoint.sh
 COPY config/airflow.cfg ${AIRFLOW_USER_HOME}/airflow.cfg
-
 RUN chown -R airflow: ${AIRFLOW_USER_HOME}
+
+RUN mkdir -p $JUPYTER_HOME
+RUN chown -R airflow:airflow $JUPYTER_HOME
+
+RUN mkdir /api
+RUN chown -R airflow:airflow /api
+
+RUN mkdir /static
+RUN chown -R airflow:airflow /static
+
+RUN mkdir -p /usr/local/etc/jupyter
+RUN chown -R airflow:airflow /usr/local/etc/jupyter
+
+# RUN python -m pip install jupyter_contrib_nbextensions
+
 #RUN apt-get install -y git
 #RUN git clone git clone https://github.com/tensorflow/tfx.git
 EXPOSE 8080 5555 8793 18888
