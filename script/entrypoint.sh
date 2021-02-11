@@ -12,6 +12,17 @@ TRY_LOOP="20"
 : "${AIRFLOW__CORE__FERNET_KEY:=${FERNET_KEY:=$(python -c "from cryptography.fernet import Fernet; FERNET_KEY = Fernet.generate_key().decode(); print(FERNET_KEY)")}}"
 : "${AIRFLOW__CORE__EXECUTOR:=${EXECUTOR:-Sequential}Executor}"
 
+echo AIRFLOW__CORE__FERNET_KEY is $AIRFLOW__CORE__FERNET_KEY
+echo AIRFLOW__CORE__FERNET_KEY is $AIRFLOW__CORE__FERNET_KEY
+echo AIRFLOW__CORE__FERNET_KEY is $AIRFLOW__CORE__FERNET_KEY
+echo AIRFLOW__CORE__FERNET_KEY is $AIRFLOW__CORE__FERNET_KEY
+echo AIRFLOW__CORE__FERNET_KEY is $AIRFLOW__CORE__FERNET_KEY
+
+echo AIRFLOW__CORE__EXECUTOR is $AIRFLOW__CORE__EXECUTOR
+echo AIRFLOW__CORE__EXECUTOR is $AIRFLOW__CORE__EXECUTOR
+echo AIRFLOW__CORE__EXECUTOR is $AIRFLOW__CORE__EXECUTOR
+echo AIRFLOW__CORE__EXECUTOR is $AIRFLOW__CORE__EXECUTOR
+
 # Load DAGs examples (default: Yes)
 if [[ -z "$AIRFLOW__CORE__LOAD_EXAMPLES" && "${LOAD_EX:=n}" == n ]]; then
   AIRFLOW__CORE__LOAD_EXAMPLES=False
@@ -29,7 +40,9 @@ if [ -e "/requirements.txt" ]; then
     echo ">>>>>>INSTALLING REQUIREMENTS.TXT<<<<<<<<<<<<<"
     echo ">>>>>>INSTALLING REQUIREMENTS.TXT<<<<<<<<<<<<<"
     echo ">>>>>>INSTALLING REQUIREMENTS.TXT<<<<<<<<<<<<<"
-    $(command -v pip) install --user  --no-warn-script-location -r /requirements.txt
+    mkdir ~/.local
+    #$(command -v pip) install --user  --no-warn-script-location -r /requirements.txt
+    $(command -v pip) install --user  --no-warn-conflicts --no-warn-script-location -r /requirements.txt
     echo ">>>>>>INSTALLING REQUIREMENTS.TXT<<<<<<<<<<<<<"
     echo ">>>>>>INSTALLING REQUIREMENTS.TXT<<<<<<<<<<<<<"
     echo ">>>>>>INSTALLING REQUIREMENTS.TXT<<<<<<<<<<<<<"
@@ -63,7 +76,10 @@ if [ "$AIRFLOW__CORE__EXECUTOR" != "SequentialExecutor" ]; then
 
     AIRFLOW__CORE__SQL_ALCHEMY_CONN="postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}${POSTGRES_EXTRAS}"
     export AIRFLOW__CORE__SQL_ALCHEMY_CONN
-
+    echo AIRFLOW__CORE__SQL_ALCHEMY_CONN is set to $AIRFLOW__CORE__SQL_ALCHEMY_CONN 
+    echo AIRFLOW__CORE__SQL_ALCHEMY_CONN is set to $AIRFLOW__CORE__SQL_ALCHEMY_CONN 
+    echo AIRFLOW__CORE__SQL_ALCHEMY_CONN is set to $AIRFLOW__CORE__SQL_ALCHEMY_CONN 
+    echo AIRFLOW__CORE__SQL_ALCHEMY_CONN is set to $AIRFLOW__CORE__SQL_ALCHEMY_CONN 
     # Check if the user has provided explicit Airflow configuration for the broker's connection to the database
     if [ "$AIRFLOW__CORE__EXECUTOR" = "CeleryExecutor" ]; then
       AIRFLOW__CELERY__RESULT_BACKEND="db+postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}${POSTGRES_EXTRAS}"
@@ -79,7 +95,12 @@ if [ "$AIRFLOW__CORE__EXECUTOR" != "SequentialExecutor" ]; then
     POSTGRES_ENDPOINT=$(echo -n "$AIRFLOW__CORE__SQL_ALCHEMY_CONN" | cut -d '/' -f3 | sed -e 's,.*@,,')
     POSTGRES_HOST=$(echo -n "$POSTGRES_ENDPOINT" | cut -d ':' -f1)
     POSTGRES_PORT=$(echo -n "$POSTGRES_ENDPOINT" | cut -d ':' -f2)
+
+    echo POSTGRES_ENDPOINT is set to $POSTGRES_ENDPOINT
+    echo POSTGRES_HOST is set to $POSTGRES_HOST
+    echo POSTGRES_PORT is set to $POSTGRES_PORT
   fi
+
 
   wait_for_port "Postgres" "$POSTGRES_HOST" "$POSTGRES_PORT"
 fi
@@ -139,9 +160,20 @@ jupyter () {
 
 }
 case "$1" in
+  bash)
+   jupyter
+   airflow db init
+   airflow users create -r Admin -u admin -f soc -l monitor -p kkdf3j -e soc-monitor@garmin.com
+   bash
+   sleep 10000
+   ;;
+      
   webserver)
     jupyter
-    airflow initdb
+    #airflow initdb
+    airflow db init
+    airflow users create -r Admin -u admin -f soc -l monitor -p kkdf3j -e soc-monitor@garmin.com
+    #airflow db init
     if [ "$AIRFLOW__CORE__EXECUTOR" = "LocalExecutor" ] || [ "$AIRFLOW__CORE__EXECUTOR" = "SequentialExecutor" ]; then
       # With the "Local" and "Sequential" executors it should all run in one container.
       airflow scheduler &

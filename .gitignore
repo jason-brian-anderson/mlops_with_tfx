@@ -1,3 +1,6 @@
+tfx_metastore_mysql.env
+
+
 ### Vim ###
 [._]*.s[a-w][a-z]
 [._]s[a-w][a-z]

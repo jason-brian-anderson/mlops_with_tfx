@@ -17,16 +17,13 @@ services:
         container_name: airflow
         #image: puckel/docker-airflow:1.10.9
         build: .
-        restart: always
+        #restart: always
         runtime: nvidia
         #depends_on:
         #    - postgres
         env_file:
                 - tfx_metastore_mysql.env
         environment:
-            #- NVIDIA_VISIBLE_DEVICES= 1,2,3
-            - NVIDIA_VISIBLE_DEVICES=all
-            - LOAD_EX=y
             - EXECUTOR=Local
             - AIRFLOW_DAG_DIR_LIST_INTERVAL=1 #dag_dir_list_interval
             - AIRFLOW_JOB_HEARTBEAT_SEC=5 # job_heartbeat_sec
@@ -38,14 +35,17 @@ services:
             - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
             - POSTGRES_USER=${POSTGRES_USER}
             - POSTGRES_HOST=${POSTGRES_HOST}
+            - NVIDIA_VISIBLE_DEVICES=all
+            #- LOAD_EX=y
         logging:
             options:
-                max-size: 10m
+                max-size: 20m
                 max-file: "3"
         volumes:
             - /home/mlops/mlops_dags:/usr/local/airflow/dags
             #- ./dags:/usr/local/airflow/dags
             - ./requirements.txt:/requirements.txt
+            - ./config/webserver_config.py:/usr/local/airflow/webserver_config.py
             # - ./plugins:/usr/local/airflow/plugins
 
         ports:
@@ -53,6 +53,7 @@ services:
             - "18888:18888"
             - "6006:6006"
         command: webserver
+        #command: bash
         healthcheck:
             test: ["CMD-SHELL", "[ -f /usr/local/airflow/airflow-webserver.pid ]"]
             interval: 30s
