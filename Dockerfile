@@ -1,13 +1,4 @@
-# VERSION 1.10.9
-# AUTHOR:  jason.anderson.professional@gmail.com
-# DESCRIPTION: tfx container with airflow, based on puckel's airflow container.
-# BUILD: docker build --rm -t puckel/docker-airflow .
-# SOURCE: https://github.com/puckel/docker-airflow
-
 FROM tensorflow/tensorflow:2.4.1-gpu
-#RUN pip install --upgrade pip
-#FROM python:3.7.7-slim-buster
-#FROM python:3.6.10-slim-buster
 LABEL maintainer="jason_anderson_professional@gmail.com"
 ARG BREAK_CACHE="1"
 # Never prompt the user for choices on installation/configuration of packages
@@ -15,7 +6,6 @@ ENV DEBIAN_FRONTEND noninteractive
 ENV TERM linux
 
 # Airflow
-#ARG AIRFLOW_VERSION=1.10.9
 ARG AIRFLOW_VERSION=2.0.1
 ARG AIRFLOW_USER_HOME=/usr/local/airflow
 ARG JUPYTER_HOME=/usr/local/share/jupyter
@@ -23,6 +13,7 @@ ARG AIRFLOW_DEPS=""
 ARG PYTHON_DEPS=""
 ENV AIRFLOW_HOME=${AIRFLOW_USER_HOME}
 ENV TF_CPP_MIN_LOG_LEVEL="2"
+
 # Define en_US.
 ENV LANGUAGE en_US.UTF-8
 ENV LANG en_US.UTF-8
@@ -30,10 +21,11 @@ ENV LC_ALL en_US.UTF-8
 ENV LC_CTYPE en_US.UTF-8
 ENV LC_MESSAGES en_US.UTF-8
 ENV CUDA_VISIBLE_DEVICES=0,1,2,3
+
 # Disable noisy "Handling signal" log messages:
 ENV GUNICORN_CMD_ARGS --log-level WARNING
 
-
+# AIRFLOW setup
 RUN set -ex \
     && buildDeps=' \
        build-essential \
@@ -84,20 +76,6 @@ RUN set -ex \
         /usr/share/doc \
         /usr/share/doc-base
 
-
-#########################################
-#########################################
-#########################################
-
-
-
-#########################################
-#########################################
-#########################################
-#########################################
-#########################################
-
-
 COPY script/entrypoint.sh /entrypoint.sh
 COPY config/airflow.cfg ${AIRFLOW_USER_HOME}/airflow.cfg
 RUN chown -R airflow: ${AIRFLOW_USER_HOME}
@@ -114,10 +92,6 @@ RUN chown -R airflow:airflow /static
 RUN mkdir -p /usr/local/etc/jupyter
 RUN chown -R airflow:airflow /usr/local/etc/jupyter
 
-# RUN python -m pip install jupyter_contrib_nbextensions
-
-#RUN apt-get install -y git
-#RUN git clone git clone https://github.com/tensorflow/tfx.git
 EXPOSE 8080 5555 8793 18888
 
 USER airflow

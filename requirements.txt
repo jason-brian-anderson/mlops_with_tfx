@@ -136,7 +136,7 @@ six==1.15.0
 tabulate==0.8.7
 tensorboard==2.4.1
 tensorboard-plugin-wit==1.8.0
-tensorflow-gpu==2.4.1
+#tensorflow-gpu==2.4.1
 tensorflow-cloud==0.1.13
 tensorflow-data-validation==0.27.0
 tensorflow-datasets==3.0.0
@@ -170,4 +170,9 @@ widgetsnbextension==3.5.1
 witwidget==1.8.0
 wrapt==1.12.1
 zipp==3.4.0
+
+
+#org specific imports
 pymsteams==0.1.14
+xlrd==2.0.1
+openpyxl==3.0.6

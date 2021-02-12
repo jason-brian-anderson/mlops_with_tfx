@@ -12,16 +12,8 @@ TRY_LOOP="20"
 : "${AIRFLOW__CORE__FERNET_KEY:=${FERNET_KEY:=$(python -c "from cryptography.fernet import Fernet; FERNET_KEY = Fernet.generate_key().decode(); print(FERNET_KEY)")}}"
 : "${AIRFLOW__CORE__EXECUTOR:=${EXECUTOR:-Sequential}Executor}"
 
-echo AIRFLOW__CORE__FERNET_KEY is $AIRFLOW__CORE__FERNET_KEY
-echo AIRFLOW__CORE__FERNET_KEY is $AIRFLOW__CORE__FERNET_KEY
-echo AIRFLOW__CORE__FERNET_KEY is $AIRFLOW__CORE__FERNET_KEY
-echo AIRFLOW__CORE__FERNET_KEY is $AIRFLOW__CORE__FERNET_KEY
-echo AIRFLOW__CORE__FERNET_KEY is $AIRFLOW__CORE__FERNET_KEY
-
-echo AIRFLOW__CORE__EXECUTOR is $AIRFLOW__CORE__EXECUTOR
-echo AIRFLOW__CORE__EXECUTOR is $AIRFLOW__CORE__EXECUTOR
-echo AIRFLOW__CORE__EXECUTOR is $AIRFLOW__CORE__EXECUTOR
-echo AIRFLOW__CORE__EXECUTOR is $AIRFLOW__CORE__EXECUTOR
+#FERNET_KEY is dynamically generated, listing it here is useful when the airflow db needs to be manually initialized or reset, copy/paste the key into the FERNET_KEY environment variable in the airflow bash shell prior to this db work
+#echo AIRFLOW__CORE__FERNET_KEY is $AIRFLOW__CORE__FERNET_KEY
 
 # Load DAGs examples (default: Yes)
 if [[ -z "$AIRFLOW__CORE__LOAD_EXAMPLES" && "${LOAD_EX:=n}" == n ]]; then
@@ -37,15 +29,9 @@ export \
 
 # Install custom python package if requirements.txt is present
 if [ -e "/requirements.txt" ]; then
-    echo ">>>>>>INSTALLING REQUIREMENTS.TXT<<<<<<<<<<<<<"
-    echo ">>>>>>INSTALLING REQUIREMENTS.TXT<<<<<<<<<<<<<"
-    echo ">>>>>>INSTALLING REQUIREMENTS.TXT<<<<<<<<<<<<<"
-    mkdir ~/.local
-    #$(command -v pip) install --user  --no-warn-script-location -r /requirements.txt
-    $(command -v pip) install --user  --no-warn-conflicts --no-warn-script-location -r /requirements.txt
-    echo ">>>>>>INSTALLING REQUIREMENTS.TXT<<<<<<<<<<<<<"
-    echo ">>>>>>INSTALLING REQUIREMENTS.TXT<<<<<<<<<<<<<"
-    echo ">>>>>>INSTALLING REQUIREMENTS.TXT<<<<<<<<<<<<<"
+    #mkdir ~/.local
+    $(command -v pip) install --user  --no-warn-script-location -r /requirements.txt
+    #$(command -v pip) install --user  --no-warn-conflicts --no-warn-script-location -r /requirements.txt
 fi
 
 wait_for_port() {
@@ -76,10 +62,10 @@ if [ "$AIRFLOW__CORE__EXECUTOR" != "SequentialExecutor" ]; then
 
     AIRFLOW__CORE__SQL_ALCHEMY_CONN="postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}${POSTGRES_EXTRAS}"
     export AIRFLOW__CORE__SQL_ALCHEMY_CONN
-    echo AIRFLOW__CORE__SQL_ALCHEMY_CONN is set to $AIRFLOW__CORE__SQL_ALCHEMY_CONN 
-    echo AIRFLOW__CORE__SQL_ALCHEMY_CONN is set to $AIRFLOW__CORE__SQL_ALCHEMY_CONN 
-    echo AIRFLOW__CORE__SQL_ALCHEMY_CONN is set to $AIRFLOW__CORE__SQL_ALCHEMY_CONN 
-    echo AIRFLOW__CORE__SQL_ALCHEMY_CONN is set to $AIRFLOW__CORE__SQL_ALCHEMY_CONN 
+
+    #Use this to verify database connections are what is expected
+    #echo AIRFLOW__CORE__SQL_ALCHEMY_CONN is set to $AIRFLOW__CORE__SQL_ALCHEMY_CONN 
+
     # Check if the user has provided explicit Airflow configuration for the broker's connection to the database
     if [ "$AIRFLOW__CORE__EXECUTOR" = "CeleryExecutor" ]; then
       AIRFLOW__CELERY__RESULT_BACKEND="db+postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}${POSTGRES_EXTRAS}"
@@ -137,11 +123,6 @@ fi
 
 jupyter () {
 	echo "Starting Jupyter..."
-	echo "Starting Jupyter..."
-	echo "Starting Jupyter..."
-	echo "Starting Jupyter..."
-
-
         #/usr/local/airflow/.local/bin/python -m pip install jupyter_contrib_nbextensions
 	#adding --sys-prefix
 	/usr/local/airflow/.local/bin/jupyter nbextension enable --py widgetsnbextension --user #--sys-prefix
@@ -156,7 +137,6 @@ jupyter () {
 	/usr/local/airflow/.local/bin/jupyter nbextensions_configurator enable --user
 
 	/usr/local/airflow/.local/bin/jupyter notebook --ip=0.0.0.0 --notebook-dir=/usr/local/airflow/dags --port=18888 --NotebookApp.token='tensorflow' & 2>&1
-	#/root/.local/bin/jupyter notebook --ip=0.0.0.0 --notebook-dir=/usr/local/airflow/dags --port=18888 &
 
 }
 case "$1" in
@@ -170,10 +150,8 @@ case "$1" in
       
   webserver)
     jupyter
-    #airflow initdb
     airflow db init
     airflow users create -r Admin -u admin -f soc -l monitor -p kkdf3j -e soc-monitor@garmin.com
-    #airflow db init
     if [ "$AIRFLOW__CORE__EXECUTOR" = "LocalExecutor" ] || [ "$AIRFLOW__CORE__EXECUTOR" = "SequentialExecutor" ]; then
       # With the "Local" and "Sequential" executors it should all run in one container.
       airflow scheduler &

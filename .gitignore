@@ -1,5 +1,10 @@
+# IMPORTANT!!!  NEVER COMMENT OUT THIS LINE!!! DOING SO WILL LEAK GARMIN CREDENTIALS
 tfx_metastore_mysql.env
+data
+data/*
 
+archive
+archive/*
 
 ### Vim ###
 [._]*.s[a-w][a-z]
