@@ -32,7 +32,6 @@ SQLALCHEMY_DATABASE_URI = conf.get('core', 'SQL_ALCHEMY_CONN')
 # Flask-WTF flag for CSRF
 CSRF_ENABLED = False
 WTF_CSRF_ENABLED = False
-
 AUTH_ROLE_PUBLIC = 'Admin'
 # ----------------------------------------------------
 # AUTHENTICATION CONFIG
