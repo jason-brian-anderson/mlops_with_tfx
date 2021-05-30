@@ -49,6 +49,7 @@ RUN set -ex \
         build-essential \
         default-libmysqlclient-dev \
         apt-utils \
+	graphviz \
         curl \
         rsync \
         netcat \

@@ -49,9 +49,9 @@ services:
             # - ./plugins:/usr/local/airflow/plugins
 
         ports:
-            - "8081:8080"
-            - "18888:18888"
-            - "6006:6006"
+            - "127.0.0.1:8081:8080"
+            - "127.0.0.1:18888:18888"
+            - "127.0.0.1:6006:6006"
         command: webserver
         #command: bash
         healthcheck:
