@@ -49,7 +49,6 @@ RUN set -ex \
         build-essential \
         default-libmysqlclient-dev \
         apt-utils \
-	graphviz \
         curl \
         rsync \
         netcat \
@@ -95,6 +94,8 @@ RUN mkdir -p /usr/local/etc/jupyter
 RUN chown -R airflow:airflow /usr/local/etc/jupyter
 
 EXPOSE 8080 5555 8793 18888
+
+ENV TF_FORCE_GPU_ALLOW_GROWTH=true
 
 USER airflow
 WORKDIR ${AIRFLOW_USER_HOME}
