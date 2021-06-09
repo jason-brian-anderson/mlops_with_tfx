@@ -95,7 +95,8 @@ RUN chown -R airflow:airflow /usr/local/etc/jupyter
 
 RUN set -ex \
    && apt-get update -yqq \
-   && apt-get install -yqq graphviz
+   && apt-get install -yqq graphviz \
+   && apt-get install --reinstall procps
 
 EXPOSE 8080 5555 8793 18888
 
