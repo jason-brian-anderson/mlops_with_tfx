@@ -93,6 +93,10 @@ RUN chown -R airflow:airflow /static
 RUN mkdir -p /usr/local/etc/jupyter
 RUN chown -R airflow:airflow /usr/local/etc/jupyter
 
+RUN set -ex \
+   && apt-get update -yqq \
+   && apt-get install -yqq graphviz
+
 EXPOSE 8080 5555 8793 18888
 
 ENV TF_FORCE_GPU_ALLOW_GROWTH=true
