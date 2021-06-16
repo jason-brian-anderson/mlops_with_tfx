@@ -43,6 +43,7 @@ services:
                 max-file: "3"
         volumes:
             - /home/mlops/mlops_dags:/usr/local/airflow/dags
+            - /home/mlops/.ssh:/usr/local/airflow/.ssh
             #- ./dags:/usr/local/airflow/dags
             - ./requirements.txt:/requirements.txt
             - ./config/webserver_config.py:/usr/local/airflow/webserver_config.py
